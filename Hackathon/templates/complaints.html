@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Complaints · AICTE Complaint Intelligence{% endblock %}
+{% block breadcrumb %}All complaints{% endblock %}
+{% block content %}
+<div class="page-heading heading-with-action"><div><div class="eyebrow">CASE OPERATIONS / REGISTER</div><h1>All complaints</h1><p class="page-subtitle">Search, filter, and follow complaint cases across your authorized scope.</p></div><div class="heading-actions"><a class="button button-outline" href="{{ url_for('export_complaints', **selected) }}">⇩ Export CSV</a><a class="button button-primary" href="{{ url_for('new_complaint') }}">＋ New complaint</a></div></div>
+<section class="panel filters-panel"><form class="filters-form" method="get" action="{{ url_for('complaints') }}">
+  <div class="filter-search"><label for="q">Search cases</label><div class="search-input"><span>⌕</span><input id="q" name="q" value="{{ selected.q }}" placeholder="Case ID, institution, subject..."></div></div>
+  <div class="filter-field"><label for="status">Status</label><select id="status" name="status"><option value="">All statuses</option>{% for value in STATUSES %}<option value="{{ value }}" {% if selected.status == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+  <div class="filter-field"><label for="priority">Priority</label><select id="priority" name="priority"><option value="">All priorities</option>{% for value in PRIORITIES %}<option value="{{ value }}" {% if selected.priority == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+  <div class="filter-field"><label for="department_id">Bureau / cell</label><select id="department_id" name="department_id"><option value="">All departments</option>{% for dept in departments %}<option value="{{ dept.id }}" {% if selected.department_id == dept.id|string %}selected{% endif %}>{{ dept.name }}</option>{% endfor %}</select></div>
+  <div class="filter-field"><label for="category">Category</label><select id="category" name="category"><option value="">All categories</option>{% for value in CATEGORIES %}<option value="{{ value }}" {% if selected.category == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+  <div class="filter-actions"><button class="button button-primary" type="submit">Apply filters</button><a class="button button-ghost" href="{{ url_for('complaints') }}">Reset</a></div>
+  <input type="hidden" name="overdue" value="{{ selected.overdue }}">
+</form>
+<div class="filter-tags"><span>{{ complaints|length }} result{{ '' if complaints|length == 1 else 's' }}</span>{% if selected.overdue == '1' %}<span class="active-filter">Overdue only <a href="{{ url_for('complaints', q=selected.q, status=selected.status, priority=selected.priority, department_id=selected.department_id, category=selected.category) }}">×</a></span>{% endif %}{% if selected.category %}<span class="active-filter">{{ selected.category }} <a href="{{ url_for('complaints', q=selected.q, status=selected.status, priority=selected.priority, department_id=selected.department_id, overdue=selected.overdue) }}">×</a></span>{% endif %}</div>
+</section>
+<section class="panel table-panel"><div class="panel-heading"><div><h2>Complaint register</h2><p>Each case has a traceable ID and status history.</p></div><span class="panel-chip">LIVE DATABASE</span></div>{% include '_complaint_table.html' %}</section>
+{% endblock %}

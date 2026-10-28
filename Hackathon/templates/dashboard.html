@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Overview · AICTE Complaint Intelligence{% endblock %}
+{% block breadcrumb %}Overview{% endblock %}
+{% block content %}
+<div class="page-heading heading-with-action">
+  <div><div class="eyebrow">CASE OPERATIONS / OVERVIEW</div><h1>Complaint overview</h1><p class="page-subtitle">Monitor institution-related complaints across your authorized workspace.</p></div>
+  <a class="button button-primary" href="{{ url_for('new_complaint') }}"><span>＋</span> Register complaint</a>
+</div>
+<div class="notice notice-demo"><span class="notice-icon">ⓘ</span><div><strong>Prototype data environment</strong><p>The dashboard includes illustrative sample cases and bureau/cell names. Replace these with the organizer's approved dataset before final evaluation.</p></div><a href="{{ url_for('imports') if g.user.role == 'admin' else url_for('complaints') }}">{{ 'Import dataset' if g.user.role == 'admin' else 'View cases' }} <span>→</span></a></div>
+
+<section class="kpi-grid">
+  <article class="kpi-card kpi-total"><div class="kpi-top"><span class="kpi-label">TOTAL COMPLAINTS</span><span class="kpi-icon">▤</span></div><div class="kpi-number">{{ total }}</div><div class="kpi-foot"><span class="kpi-foot-dot"></span> All cases in your view</div></article>
+  <article class="kpi-card kpi-pending"><div class="kpi-top"><span class="kpi-label">OPEN / PENDING</span><span class="kpi-icon">◷</span></div><div class="kpi-number">{{ pending }}</div><div class="kpi-foot"><span class="mini-tag tag-amber">Needs follow-up</span><span>Not yet closed</span></div></article>
+  <article class="kpi-card kpi-resolved"><div class="kpi-top"><span class="kpi-label">RESOLVED / CLOSED</span><span class="kpi-icon">✓</span></div><div class="kpi-number">{{ resolved }}</div><div class="kpi-foot"><span class="mini-tag tag-green">Completed</span><span>Recorded outcomes</span></div></article>
+  <article class="kpi-card kpi-overdue"><div class="kpi-top"><span class="kpi-label">OVERDUE CASES</span><span class="kpi-icon">!</span></div><div class="kpi-number">{{ overdue }}</div><div class="kpi-foot"><span class="mini-tag {{ 'tag-red' if overdue else 'tag-green' }}">{{ 'Attention required' if overdue else 'None overdue' }}</span><span>Past due date</span></div></article>
+</section>
+
+<section class="analytics-grid">
+  <article class="panel trend-panel">
+    <div class="panel-heading"><div><h2>Complaint activity</h2><p>New cases by month · last six months</p></div><span class="panel-chip">6 MONTHS</span></div>
+    <div class="trend-chart" role="img" aria-label="Monthly complaint count bar chart">
+      {% set max_month = monthly|map(attribute='count')|max %}
+      {% for month in monthly %}<div class="trend-column"><div class="trend-value">{{ month.count }}</div><div class="trend-track"><div class="trend-bar {% if loop.last %}trend-bar-current{% endif %}" style="height: {{ (month.count / max_month * 100) if max_month else 4 }}%"></div></div><span class="trend-label">{{ month.label }}</span></div>{% endfor %}
+    </div>
+    <div class="chart-legend"><span><i class="legend-dot legend-blue"></i>Complaints registered</span><span class="muted">Counts come from saved case records</span></div>
+  </article>
+  <article class="panel status-panel">
+    <div class="panel-heading"><div><h2>Case status</h2><p>Current distribution</p></div><a class="text-link" href="{{ url_for('complaints') }}">View all →</a></div>
+    {% set status_colors = {'New':'blue','Assigned':'purple','In Progress':'amber','On Hold':'gray','Resolved':'green','Closed':'green','Reopened':'red'} %}
+    {% for status in STATUSES %}<div class="status-row"><div class="status-name"><span class="status-dot dot-{{ status_colors[status] }}"></span><span>{{ status }}</span></div><div class="status-meter"><span class="meter-{{ status_colors[status] }}" style="width: {{ (status_counts[status] / total * 100) if total else 0 }}%"></span></div><strong>{{ status_counts[status] }}</strong></div>{% endfor %}
+  </article>
+</section>
+
+<section class="bottom-grid">
+  <article class="panel department-panel">
+    <div class="panel-heading"><div><h2>Bureau / cell workload</h2><p>Case volume by department</p></div><a class="text-link" href="{{ url_for('departments') if g.user.role == 'admin' else url_for('reports') }}">Details →</a></div>
+    {% set max_dept = department_rows|map(attribute='count')|max if department_rows else 0 %}
+    {% for department in department_rows %}<div class="department-row"><div class="department-ident"><span class="department-avatar">{{ department.name[0] }}</span><div><strong>{{ department.name }}</strong><small>{{ department.count }} case{{ '' if department.count == 1 else 's' }}</small></div></div><div class="department-meter"><span style="width: {{ (department.count / max_dept * 100) if max_dept else 0 }}%"></span></div></div>{% else %}<div class="empty-state">No department data to display.</div>{% endfor %}
+  </article>
+  <article class="panel priority-panel">
+    <div class="panel-heading"><div><h2>Priority watch</h2><p>Cases requiring closer attention</p></div><span class="priority-symbol">!</span></div>
+    <div class="priority-callout"><div class="priority-callout-number">{{ high_priority }}</div><div><strong>High-priority open cases</strong><p>High and critical priority records that are not yet resolved.</p></div></div>
+    <div class="priority-stat-row"><span>Overdue open cases</span><strong class="{{ 'text-danger' if overdue else 'text-success' }}">{{ overdue }}</strong></div>
+    <div class="priority-stat-row"><span>Pending cases</span><strong>{{ pending }}</strong></div>
+    <a href="{{ url_for('complaints', priority='High') }}" class="button button-outline button-full">Review complaint queue <span>→</span></a>
+  </article>
+</section>
+
+<section class="panel recent-panel">
+  <div class="panel-heading"><div><h2>Recently updated workspace</h2><p>Latest complaint records available to your account</p></div><a class="button button-small button-outline" href="{{ url_for('complaints') }}">All complaints <span>→</span></a></div>
+  {% with complaints=recent %}{% include '_complaint_table.html' %}{% endwith %}
+</section>
+{% endblock %}

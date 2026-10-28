@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Sign in · AICTE Complaint Intelligence{% endblock %}
+{% block auth_content %}
+<div class="login-layout">
+  <section class="login-showcase">
+    <a class="brand brand-light" href="{{ url_for('login') }}"><span class="brand-mark">A</span><span class="brand-copy"><strong>AICTE</strong><small>CASE INTELLIGENCE</small></span></a>
+    <div class="showcase-content">
+      <div class="eyebrow eyebrow-light"><span class="pulse-dot"></span> INTEGRATED CASE MONITORING</div>
+      <h1>Every case.<br><em>One clear view.</em></h1>
+      <p>A centralized workspace to track institution-related complaints, coordinate bureau action, and turn case activity into useful insight.</p>
+      <div class="showcase-stats"><div><strong>01</strong><span>Unified workspace</span></div><div><strong>02</strong><span>Transparent tracking</span></div><div><strong>03</strong><span>Actionable insights</span></div></div>
+    </div>
+    <div class="showcase-footer"><span>AICTE Complaint Monitoring System</span><span>Local demo environment</span></div>
+    <div class="showcase-orb orb-one"></div><div class="showcase-orb orb-two"></div>
+  </section>
+  <section class="login-panel">
+    <div class="login-card">
+      <div class="login-kicker">WELCOME BACK</div>
+      <h2>Sign in to your workspace</h2>
+      <p class="muted">Use your demo account to access the complaint dashboard.</p>
+      <form method="post" class="form-stack login-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="username">Username</label>
+        <div class="input-with-icon"><span>◉</span><input id="username" name="username" type="text" placeholder="Enter username" autocomplete="username" required autofocus></div>
+        <label for="password">Password</label>
+        <div class="input-with-icon"><span>●</span><input id="password" name="password" type="password" placeholder="Enter password" autocomplete="current-password" required><button type="button" class="password-toggle" data-toggle-password="password" aria-label="Show password">Show</button></div>
+        <button class="button button-primary button-full" type="submit">Sign in <span>→</span></button>
+      </form>
+      <div class="demo-credentials"><div class="credentials-heading"><span>DEMO ACCESS</span><span class="badge badge-neutral">Local prototype</span></div><div class="credential-line"><span>Administrator</span><code>admin / Admin@123</code><button type="button" data-copy="admin" aria-label="Copy username">Copy</button></div><div class="credential-line"><span>Officer</span><code>officer / Officer@123</code><button type="button" data-copy="officer" aria-label="Copy username">Copy</button></div></div>
+      <p class="login-disclaimer">Demo credentials are for local testing only. Change them before any shared or deployed use. This is an independent hackathon prototype, not an official AICTE service.</p>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Error {{ code }} · AICTE Complaint Intelligence{% endblock %}
+{% block breadcrumb %}Error {{ code }}{% endblock %}
+{% block auth_content %}<div class="error-page"><div class="error-code">{{ code }}</div><h1>{{ 'Access restricted' if code == 403 else 'Page not found' if code == 404 else 'Request could not be completed' }}</h1><p>{{ message }}</p><a href="{{ url_for('dashboard') if g.user else url_for('login') }}" class="button button-primary">Return to workspace <span>→</span></a></div>{% endblock %}
+{% block content %}
+<div class="error-page"><div class="error-code">{{ code }}</div><h1>{{ 'Access restricted' if code == 403 else 'Page not found' if code == 404 else 'Request could not be completed' }}</h1><p>{{ message }}</p><a href="{{ url_for('dashboard') if g.user else url_for('login') }}" class="button button-primary">Return to workspace <span>→</span></a></div>
+{% endblock %}

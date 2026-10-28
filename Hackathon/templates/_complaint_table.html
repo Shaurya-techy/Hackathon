@@ -1,0 +1,15 @@
+{% if complaints %}
+<div class="table-wrap"><table class="data-table"><thead><tr><th>COMPLAINT / SUBJECT</th><th>INSTITUTION</th><th>BUREAU / CELL</th><th>PRIORITY</th><th>STATUS</th><th>DUE DATE</th><th></th></tr></thead><tbody>
+{% for item in complaints %}
+<tr>
+  <td><a class="case-link" href="{{ url_for('complaint_detail', complaint_id=item.id) }}"><strong>{{ item.complaint_number }}</strong><span>{{ item.subject }}</span></a></td>
+  <td><span class="table-primary">{{ item.institution_name }}</span><small class="table-secondary">{{ item.category }}</small></td>
+  <td><span class="table-primary">{{ item.department_name or 'Unassigned' }}</span><small class="table-secondary">{{ item.officer_name or 'No officer assigned' }}</small></td>
+  <td><span class="priority-badge priority-{{ item.priority|lower|replace(' ', '-') }}"><i></i>{{ item.priority }}</span></td>
+  <td><span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">{{ item.status }}</span></td>
+  <td><span class="due-date {% if item.due_date and item.due_date < today_iso and item.status not in ['Resolved','Closed'] %}due-overdue{% endif %}">{{ item.due_date|shortdate }}</span></td>
+  <td><a class="row-action" href="{{ url_for('complaint_detail', complaint_id=item.id) }}" aria-label="View complaint">↗</a></td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty-state"><div class="empty-icon">▤</div><strong>No complaints found</strong><p>Try changing your filters or register a new complaint.</p><a class="button button-outline button-small" href="{{ url_for('new_complaint') }}">Register complaint</a></div>{% endif %}
